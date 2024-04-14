@@ -12,8 +12,8 @@ It should retrieve the SSML from an API (provided), synthesize it into sentences
 
 ### Implementation Checklist
 
--   [ ] **fetchContent:** Fetch content from the API end point using a GET request.
--   [ ] **parseContentIntoSentences:** Parse the fetched content into sentences based on rules described above (please refrain from using DOMParser or any built-in libraries to parse the fetched content)
+-   [x] **fetchContent:** Fetch content from the API end point using a GET request.
+-   [x] **parseContentIntoSentences:** Parse the fetched content into sentences based on rules described above (please refrain from using DOMParser or any built-in libraries to parse the fetched content)
 -   [ ] **useSpeech:** Hook that takes the current set of sentences and plays it using the `speechEngine` in `speech.ts`
 -   [ ] **UI:** A Controls component that allows you to play, pause and fetch new content. A Currently Reading component that displays the currently read sentence and word. (sentences should auto play after clicking play until paused)
 
