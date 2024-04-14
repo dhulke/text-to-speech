@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import { PlayingState } from './speech';
-import { createSpeechEngine } from './speech';
+import { createSpeechEngine, SpeechEngine } from './speech';
 
 /*
   @description
@@ -13,26 +13,44 @@ import { createSpeechEngine } from './speech';
 */
 const useSpeech = (sentences: Array<string>) => {
   const [currentSentenceIdx, setCurrentSentenceIdx] = useState(0);
-  const [currentWordRange, setCurrentWordRange] = useState([0, 0]);
+  const [currentWordRange, setCurrentWordRange] = useState<[number, number]>([0, 0]);
 
   const [playbackState, setPlaybackState] = useState<PlayingState>("paused");
-  const [{state, ePlay, ePause, eCancel, eLoad}, setSpeechEngine] = useState(() => createSpeechEngine({
-    onBoundary: (e: SpeechSynthesisEvent) => {},
-    onEnd: (e: SpeechSynthesisEvent) => {
-      setCurrentSentenceIdx((v) => v + 1);
-      if (currentSentenceIdx + 1 < sentences.length) {
-        play();
+  const [speechEngine, setSpeechEngine] = useState<null | SpeechEngine>(null);
+
+  useEffect(() => {
+    setSpeechEngine(createSpeechEngine({
+      onBoundary: (e: SpeechSynthesisEvent) => {
+        setCurrentWordRange([e.charIndex, e.charIndex + e.charLength]);
+      },
+      onEnd: (e: SpeechSynthesisEvent) => {
+        setCurrentSentenceIdx((value) => (value + 1) % sentences.length);
+        setCurrentWordRange([0, 0]);
+        console.log(currentSentenceIdx);
+      },
+      onStateUpdate: (state: PlayingState) => {
+        console.log(state);
+        setPlaybackState(state);
       }
-    },
-    onStateUpdate: (state: PlayingState) => {}
-  }))
+    }));
+  }, [sentences]);
+
+  useEffect(() => {
+    if (currentSentenceIdx !== 0) {
+      play();
+    }
+  }, [currentSentenceIdx]);
 
   const play = () => {
-    eLoad(sentences[currentSentenceIdx]);
-    ePlay();
+    if (speechEngine) {
+      speechEngine.load(sentences[currentSentenceIdx]);
+      speechEngine.play();
+    }
   };
   const pause = () => {
-    ePause();
+    if (speechEngine) {
+      speechEngine.pause();
+    }
   };
 
   return {

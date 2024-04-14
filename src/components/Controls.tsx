@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { PlayingState } from '../lib/speech';
 
 /*
@@ -11,11 +13,22 @@ export const Controls = ({
   play,
   pause,
   loadNewContent,
+  state,
 }: {
   play: () => void;
   pause: () => void;
   loadNewContent: () => void;
   state: PlayingState;
 }) => {
-  return <div></div>;
+  function playPause() {
+    if (state !== "playing") {
+      play();
+    } else {
+      pause();
+    }
+  }
+  return <div>
+    <button onClick={playPause}>{state === "playing" ? "Pause" : "Play"}</button>
+    <button onClick={loadNewContent}>Load new content</button>
+  </div>;
 };
